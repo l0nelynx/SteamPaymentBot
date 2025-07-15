@@ -6,7 +6,7 @@ from aiogram.types import LabeledPrice, PreCheckoutQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 # Настройки
-#tkn_bot = ""
+# tkn_bot = ""
 tkn_bot = os.environ["TOKEN"]
 # Инициализация бота
 bot = Bot(token=tkn_bot)
