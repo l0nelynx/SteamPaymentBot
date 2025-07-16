@@ -1,16 +1,18 @@
 import logging,os
-from aiogram import Bot, Dispatcher, types
+from aiogram import Dispatcher, types
 from aiogram.types import Message, CallbackQuery, LabeledPrice
 from aiogram.filters import Command
 from aiogram.types import LabeledPrice, PreCheckoutQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from botlogic.settings import bot
+from botlogic.handlers.events import start_bot, stop_bot
 
-# Настройки
-# tkn_bot = ""
-tkn_bot = os.environ["TOKEN"]
 # Инициализация бота
-bot = Bot(token=tkn_bot)
+#bot = Bot(token=tkn_bot)
 dp = Dispatcher()
+
+@dp.startup.register(start_bot)
+@dp.shutdown.register(stop_bot)
 
 # Команда /start
 @dp.message(Command("start"))
