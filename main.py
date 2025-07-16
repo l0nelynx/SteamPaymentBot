@@ -1,54 +1,58 @@
-import logging,os
-from aiogram import Dispatcher, types
+import logging
+from aiogram import Dispatcher, types, F
 from aiogram.types import Message, CallbackQuery, LabeledPrice
 from aiogram.filters import Command
 from aiogram.types import LabeledPrice, PreCheckoutQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from botlogic.settings import bot
-from botlogic.handlers.events import start_bot, stop_bot
-
+from app.settings import bot
+from app.handlers.events import start_bot, stop_bot
+from aiogram.types import PreCheckoutQuery
 # Инициализация бота
-#bot = Bot(token=tkn_bot)
+# bot = Bot(token=tkn_bot)
 dp = Dispatcher()
 
-@dp.startup.register(start_bot)
-@dp.shutdown.register(stop_bot)
+dp.startup.register(start_bot)
+dp.shutdown.register(stop_bot)
 
 # Команда /start
 @dp.message(Command("start"))
-async def cmd_start(message: types.Message):
+async def cmd_start(message: Message):
+    await start_bot()
     await message.answer(
-        "🌟 Добро пожаловать в бота для поддержки!\n"
-        "Используйте команду /donate чтобы отправить Telegram Stars разработчику."
+       "🌟 Добро пожаловать в бота для поддержки!\n"
+       "Используйте команду /donate чтобы отправить Telegram Stars разработчику."
     )
+
+
 @dp.message(Command("donate"))
 async def send_invoice_handler(message: Message):
-    prices = [LabeledPrice(label="XTR", amount=20)]
+    prices = [LabeledPrice(label="XTR", amount=1)]
     await message.answer_invoice(
         title="Поддержка канала",
-        description="Поддержать канал на 20 звёзд!",
+        description="Поддержать канал на 1 звёзду!",
         prices=prices,
         provider_token="",
         payload="channel_support",
         currency="XTR",
         reply_markup=payment_keyboard(),
     )
+    logging.info("Запускаю инвойс")
+
+
 def payment_keyboard():
     builder = InlineKeyboardBuilder()
-    builder.button(text=f"Оплатить 20 ⭐️", pay=True)
+    builder.button(text=f"Оплатить 1 ⭐️", pay=True)
 
     return builder.as_markup()
 
-from aiogram.types import PreCheckoutQuery
-
-
+@dp.pre_checkout_query()
 async def pre_checkout_handler(pre_checkout_query: PreCheckoutQuery):
+    logging.info("Запускаю pre_checkout_handler")
     await pre_checkout_query.answer(ok=True)
 
-
+@dp.message(F.successful_payment)
 async def success_payment_handler(message: Message):
     await message.answer(text="🥳Спасибо за вашу поддержку!🤗")
-
 
 
 if __name__ == "__main__":

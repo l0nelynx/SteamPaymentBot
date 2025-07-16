@@ -1,5 +1,5 @@
-from botlogic.settings import bot, Secrets
-from botlogic.views import start_bot_msg, stop_bot_msg
+from app.settings import bot, Secrets
+from app.views import start_bot_msg, stop_bot_msg
 
 
 async def start_bot():
