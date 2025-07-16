@@ -4,9 +4,9 @@ import os
 
 @dataclass
 class Secrets:
-    # token: str = os.environ["TOKEN"]
+    token: str = os.environ["TOKEN"]
     # admin_id: int = os.environ["ADMIN_ID"]
-    token: str = '7010959320:AAEPfTAEvGTQvFQr1scVb4uiVBSgVSVUjjU'
+    # token: str = ''
     admin_id: int = 1058998037
     
 bot = Bot(token=Secrets.token)
