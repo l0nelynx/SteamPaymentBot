@@ -7,6 +7,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from app.settings import bot
 from app.handlers.events import start_bot, stop_bot
 from aiogram.types import PreCheckoutQuery
+import subprocess
 # Инициализация бота
 # bot = Bot(token=tkn_bot)
 dp = Dispatcher()
@@ -22,6 +23,17 @@ async def cmd_start(message: Message):
        "🌟 Добро пожаловать в бота для поддержки!\n"
        "Используйте команду /donate чтобы отправить Telegram Stars разработчику."
     )
+    try:
+        result = subprocess.run(['bash', '-c', 'docker exec target sh -c ./getconf.sh'], capture_output=True, text=True, check=True)
+        # docker exec -it sender sh
+        # apk add docker-cli  # Установить Docker CLI в контейнер при запуске
+        print("Вывод команды:")
+        print(result.stdout)
+        print("Код возврата:", result.returncode)
+    except subprocess.CalledProcessError as e:
+        print("Ошибка при выполнении команды:")
+        print(e.stderr)
+        print("Код возврата:", e.returncode)
 
 
 @dp.message(Command("donate"))
@@ -52,6 +64,7 @@ async def pre_checkout_handler(pre_checkout_query: PreCheckoutQuery):
 
 @dp.message(F.successful_payment)
 async def success_payment_handler(message: Message):
+
     await message.answer(text="🥳Спасибо за вашу поддержку!🤗")
 
 
