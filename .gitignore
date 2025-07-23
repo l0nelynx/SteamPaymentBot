@@ -2,3 +2,4 @@
 .idea
 .venv
 Tg_payment.iml
+db.sqlite3
