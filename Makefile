@@ -1,3 +1,5 @@
+build:
+	docker build -t steambot:latest .
 run:
 	docker run -it -d --env-file .env --restart=unless-stopped --name steambot steambot
 stop:
