@@ -1,7 +1,7 @@
 build:
 	docker build -t steambot:latest .
 run:
-	docker run -it -d --env-file .env --restart=unless-stopped --name steambot steambot --mount type=bind,source=$(pwd)/db/db.sqlite3,target=/usr/src/app/db.sqlite3
+	docker run --env-file .env --restart=unless-stopped --mount type=bind,source=$(pwd)/db/db.sqlite3,target=/usr/src/app/db.sqlite3 -it -d --name steambot steambot
 stop:
 	docker stop steambot
 attach:
