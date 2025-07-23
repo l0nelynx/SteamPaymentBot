@@ -1,4 +1,6 @@
 import os
+
+
 def check_amount(args):
     price = os.environ["PRICE"]
     if not args:
