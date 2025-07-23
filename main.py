@@ -8,6 +8,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardButton, 
 from app.settings import bot
 from app.handlers.events import start_bot, stop_bot
 from app.utils import check_amount
+import app.database.requests as rq
 # import subprocess
 # Инициализация бота
 dp = Dispatcher()
@@ -19,7 +20,7 @@ crypto = os.environ["CRYPTO"]
 
 @dp.message(Command("start"))
 async def cmd_start(message: Message):
-    await start_bot()
+    await rq.set_user(message.from_user.id)
     web_app_button = InlineKeyboardButton(
         text="🎮 Пополнить STEAM",
         web_app=WebAppInfo(url=os.environ["URL"])
