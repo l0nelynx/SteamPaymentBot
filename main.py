@@ -1,46 +1,40 @@
 import logging
-import os
 from aiogram import Dispatcher, F
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command, CommandObject
 from aiogram.types import LabeledPrice, PreCheckoutQuery
-from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from app.settings import bot
 from app.handlers.events import start_bot, stop_bot
 from app.utils import check_amount
+from app.handlers.events import main_menu, main_call
 import app.database.requests as rq
+from app.keyboards import payment_keyboard
+import app.keyboards as kb
 # import subprocess
 # Инициализация бота
 dp = Dispatcher()
 
 dp.startup.register(start_bot)
 dp.shutdown.register(stop_bot)
-crypto = os.environ["CRYPTO"]
 
 
 @dp.message(Command("start"))
 async def cmd_start(message: Message):
     await rq.set_user(message.from_user.id)
-    web_app_button = InlineKeyboardButton(
-        text="🎮 Пополнить STEAM",
-        web_app=WebAppInfo(url=os.environ["URL"])
-    )
-
-    # Собираем клавиатуру
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[[web_app_button]])
-
+    await main_menu(message)
     # Отправляем сообщение с кнопкой
-    await message.answer(
-        "💳 <b>Пополнение кошелька Steam для РФ и СНГ</b>\n"
-        "└ Комиссия платежной системы: 2%\n\n"
-        "🔄 <b>Потери при конвертации валюты</b>\n"
-        "└ До 10% (максимальный порог)\n\n"
-        "ℹ️ Бот не берет комиссию с платежей.\n"
-        "Поэтому всегда рады Вашей поддержке\n"
-        "/donate <i>сумма</i>⭐️\n"
-        f"Или crypto: <code>{crypto}</code>",
-        reply_markup=keyboard, parse_mode="HTML"
-    )
+
+
+@dp.callback_query(F.data == 'Main')
+async def others(callback: CallbackQuery):
+    await callback.answer('Вы в главном меню')
+    await main_call(callback)
+
+
+@dp.callback_query(F.data == 'Others')
+async def others(callback: CallbackQuery):
+    await callback.answer('Вы выбрали оплату других сервисов')
+    await callback.message.answer('На данный момент доступны следующие услуги:', reply_markup=kb.others)
 
 
 @dp.message(Command("donate"))
@@ -58,13 +52,6 @@ async def send_invoice_handler(message: Message, command: CommandObject):
     logging.info("Запускаю инвойс")
 
 
-def payment_keyboard(amount):
-    builder = InlineKeyboardBuilder()
-    builder.button(text=f"Оплатить {amount} ⭐️", pay=True)
-
-    return builder.as_markup()
-
-
 @dp.pre_checkout_query()
 async def pre_checkout_handler(pre_checkout_query: PreCheckoutQuery):
     logging.info("Запускаю pre_checkout_handler")
@@ -73,7 +60,6 @@ async def pre_checkout_handler(pre_checkout_query: PreCheckoutQuery):
 
 @dp.message(F.successful_payment)
 async def success_payment_handler(message: Message):
-
     await message.answer(text="🥳Спасибо за вашу поддержку!🤗")
 
 
