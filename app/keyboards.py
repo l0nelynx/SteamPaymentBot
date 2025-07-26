@@ -3,6 +3,7 @@ import os
 from aiogram.types import InlineKeyboardButton, WebAppInfo, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+
 def payment_keyboard(amount):
     builder = InlineKeyboardBuilder()
     builder.button(text=f"Оплатить {amount} ⭐️", pay=True)
@@ -38,8 +39,8 @@ to_main_button = InlineKeyboardButton(text='На главную', callback_data=
 main = InlineKeyboardMarkup(inline_keyboard=[[steam_button],
                                              [others_button]])
 
-others= InlineKeyboardMarkup(inline_keyboard=[[psnus_button],
-                                              [nint_button],
-                                              [pscard_button],
-                                              [xbox_button],
-                                              [to_main_button]])
+others = InlineKeyboardMarkup(inline_keyboard=[[psnus_button],
+                                               [nint_button],
+                                               [pscard_button],
+                                               [xbox_button],
+                                               [to_main_button]])

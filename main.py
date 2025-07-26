@@ -4,12 +4,13 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command, CommandObject
 from aiogram.types import LabeledPrice, PreCheckoutQuery
 from app.settings import bot
-from app.handlers.events import start_bot, stop_bot
+from app.handlers.events import start_bot, stop_bot, userlist
 from app.utils import check_amount
 from app.handlers.events import main_menu, main_call
 import app.database.requests as rq
 from app.keyboards import payment_keyboard
 import app.keyboards as kb
+from app.settings import Secrets
 # import subprocess
 # Инициализация бота
 dp = Dispatcher()
@@ -23,6 +24,11 @@ async def cmd_start(message: Message):
     await rq.set_user(message.from_user.id)
     await main_menu(message)
     # Отправляем сообщение с кнопкой
+
+
+@dp.message(Command("users"), F.from_user.id == Secrets.admin_id)
+async def user_db_check(message: Message):
+    await userlist()
 
 
 @dp.callback_query(F.data == 'Main')
